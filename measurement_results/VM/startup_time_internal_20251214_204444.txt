@@ -1,0 +1,26 @@
+=== Đo thời gian khởi động từ BÊN TRONG - Mode: vm ===
+Thời gian bắt đầu: Sun Dec 14 20:44:44 SEAST 2025
+
+--- Đo thời gian khởi động từ BÊN TRONG VM ---
+
+Dừng service hiện tại (nếu có)...
+Warning: Permanently added '[127.0.0.1]:2222' (ED25519) to the list of known hosts.
+sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+sudo: a password is required
+1. Đo thời gian start service...
+Warning: Permanently added '[127.0.0.1]:2222' (ED25519) to the list of known hosts.
+sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+sudo: a password is required
+Thời gian start service: 0.452366 giây (452 ms)
+
+2. Đợi service sẵn sàng (từ bên trong VM)...
+Service ready sau: 0.527035 giây (527 ms)
+
+=== TỔNG KẾT ===
+Start time: 0.452366 giây (452 ms)
+Ready time: 0.527035 giây (527 ms)
+
+Kết quả đã được lưu vào:
+  - Text: /c/Users/nhman/OneDrive/Desktop/NLHDH/Update-Automated-Multiple-Choice-Exam-Grading/measurement_results/VM/startup_time_internal_20251214_204444.txt
+  - CSV: /c/Users/nhman/OneDrive/Desktop/NLHDH/Update-Automated-Multiple-Choice-Exam-Grading/measurement_results/VM/startup_time_internal_20251214_204444.csv
+Thời gian kết thúc: Sun Dec 14 20:44:49 SEAST 2025

@@ -1,0 +1,61 @@
+=== Đo thông lượng (Throughput) - Mode: vm ===
+Tool: ab
+Concurrent requests: 50
+Total requests: 5000
+Thời gian bắt đầu: Sun Dec 14 18:38:56 SEAST 2025
+
+Testing URL: http://127.0.0.1:8080/
+
+--- Chạy Apache Bench (ab) ---
+
+Warm-up: 10 requests...
+Chạy test chính...
+This is ApacheBench, Version 2.3 <$Revision: 1923142 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+
+
+Server Software:        nginx/1.18.0
+Server Hostname:        127.0.0.1
+Server Port:            8080
+
+Document Path:          /
+Document Length:        438 bytes
+
+Concurrency Level:      50
+Time taken for tests:   13.773 seconds
+Complete requests:      5000
+Failed requests:        0
+Total transferred:      3400000 bytes
+HTML transferred:       2190000 bytes
+Requests per second:    363.04 [#/sec] (mean)
+Time per request:       137.726 [ms] (mean)
+Time per request:       2.755 [ms] (mean, across all concurrent requests)
+Transfer rate:          241.08 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    1  18.8      0     503
+Processing:     6  136 173.5    106    1433
+Waiting:        3  130 166.6    106    1432
+Total:          6  137 174.3    107    1433
+
+Percentage of the requests served within a certain time (ms)
+  50%    107
+  66%    117
+  75%    124
+  80%    130
+  90%    141
+  95%    509
+  98%    522
+  99%   1425
+ 100%   1433 (longest request)
+
+Chi tiết đã được lưu vào: measurement_results/ab_vm_20251214_183856.tsv
+
+--- Đo tài nguyên trong khi test ---
+
+Kết quả đã được lưu vào: measurement_results/throughput_vm_ab_20251214_183856.txt
+Thời gian kết thúc: Sun Dec 14 18:39:15 SEAST 2025

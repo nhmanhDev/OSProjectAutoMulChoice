@@ -1,0 +1,69 @@
+=== Đo thông lượng từ BÊN TRONG - Mode: vm ===
+Tool: ab
+Concurrent requests: 10
+Total requests: 1000
+Thời gian bắt đầu: Sun Dec 14 20:46:01 SEAST 2025
+
+Testing URL: http://localhost/ (từ bên trong)
+
+--- Chạy Apache Bench từ BÊN TRONG VM ---
+
+Warning: Permanently added '[127.0.0.1]:2222' (ED25519) to the list of known hosts.
+This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        nginx/1.18.0
+Server Hostname:        localhost
+Server Port:            80
+
+Document Path:          /
+Document Length:        438 bytes
+
+Concurrency Level:      10
+Time taken for tests:   0.094 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      680000 bytes
+HTML transferred:       438000 bytes
+Requests per second:    10631.85 [#/sec] (mean)
+Time per request:       0.941 [ms] (mean)
+Time per request:       0.094 [ms] (mean, across all concurrent requests)
+Transfer rate:          7060.21 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.2      0       2
+Processing:     0    1   0.6      0       8
+Waiting:        0    0   0.5      0       7
+Total:          0    1   0.6      1       8
+WARNING: The median and mean for the processing time are not within a normal deviation
+        These results are probably not that reliable.
+
+Percentage of the requests served within a certain time (ms)
+  50%      1
+  66%      1
+  75%      1
+  80%      1
+  90%      2
+  95%      2
+  98%      3
+  99%      3
+ 100%      8 (longest request)
+
+Kết quả đã được lưu vào: /c/Users/nhman/OneDrive/Desktop/NLHDH/Update-Automated-Multiple-Choice-Exam-Grading/measurement_results/VM/throughput_internal_ab_20251214_204601.txt
+Thời gian kết thúc: Sun Dec 14 20:46:02 SEAST 2025

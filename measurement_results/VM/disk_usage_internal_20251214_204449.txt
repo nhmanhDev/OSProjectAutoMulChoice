@@ -1,0 +1,28 @@
+=== Đo dung lượng đĩa từ BÊN TRONG - Mode: vm ===
+Thời gian: Sun Dec 14 20:44:49 SEAST 2025
+
+--- Dung lượng đĩa từ BÊN TRONG VM ---
+
+1. Disk usage tổng thể (từ bên trong VM):
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           795M  1.7M  793M   1% /run
+/dev/sda3        24G   20G  3.6G  85% /
+tmpfs           3.9G   37M  3.9G   1% /dev/shm
+tmpfs           5.0M  4.0K  5.0M   1% /run/lock
+/dev/sda2       512M  6.1M  506M   2% /boot/efi
+tmpfs           795M  120K  795M   1% /run/user/1000
+/dev/sr0         51M   51M     0 100% /media/sysadmin/VBox_GAs_7.2.4
+
+2. Dung lượng thư mục ứng dụng:
+40K	/home/sysadmin/.local/lib/python3.10/site-packages/tensorflow/core/example
+0	/home/sysadmin/.local/lib/python3.10/site-packages/tensorflow/core/example/__init__.py
+4.0K	/home/sysadmin/.local/lib/python3.10/site-packages/tensorflow/core/example/example_parser_configuration_pb2.py
+4.0K	/home/sysadmin/.local/lib/python3.10/site-packages/tensorflow/core/example/example_pb2.py
+8.0K	/home/sysadmin/.local/lib/python3.10/site-packages/tensorflow/core/example/feature_pb2.py
+20K	/home/sysadmin/.local/lib/python3.10/site-packages/tensorflow/core/example/__pycache__
+
+3. Dung lượng root filesystem:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3        24G   20G  3.6G  85% /
+
+Kết quả đã được lưu vào: /c/Users/nhman/OneDrive/Desktop/NLHDH/Update-Automated-Multiple-Choice-Exam-Grading/measurement_results/VM/disk_usage_internal_20251214_204449.txt

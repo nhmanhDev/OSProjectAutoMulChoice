@@ -1,0 +1,6 @@
+metric,value,unit,description
+hypervisor_memory,10.41,MB,VirtualBox hypervisor memory from host
+vm_allocated_memory,8192,MB,VM allocated memory
+vm_allocated_cpus,4,count,VM allocated CPUs
+vm_total_overhead,8202.41,MB,Total VM overhead from host
+vm_disk_size,21.29,GB,VM disk file size

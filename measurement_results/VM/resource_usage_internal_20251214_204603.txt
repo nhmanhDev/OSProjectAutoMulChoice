@@ -1,0 +1,35 @@
+=== Đo mức sử dụng RAM và CPU từ BÊN TRONG - Mode: vm ===
+Thời gian đo: 60 giây
+Thời gian bắt đầu: Sun Dec 14 20:46:03 SEAST 2025
+
+--- Đo tài nguyên từ BÊN TRONG VM ---
+
+SSH connection: vm-ubuntu
+Đang đo từ BÊN TRONG VM trong 60 giây...
+Timestamp,CPU %,Memory (MB),Memory %
+2025-12-14 20:46:03,48.2,2468,31.08
+2025-12-14 20:46:06,16.7,2459,30.97
+2025-12-14 20:46:09,7.4,2459,30.97
+2025-12-14 20:46:12,11,2462,31.00
+2025-12-14 20:46:15,11.7,2462,31.00
+2025-12-14 20:46:17,13.1,2459,30.97
+2025-12-14 20:46:20,18.5,2459,30.97
+2025-12-14 20:46:23,8.6,2465,31.04
+2025-12-14 20:46:25,14.3,2463,31.02
+2025-12-14 20:46:28,6.5,2463,31.02
+2025-12-14 20:46:31,14.3,2464,31.03
+2025-12-14 20:46:34,38.2,2464,31.03
+2025-12-14 20:46:37,21.3,2462,31.00
+2025-12-14 20:46:40,12.5,2461,30.99
+2025-12-14 20:46:43,15,2462,31.00
+2025-12-14 20:46:46,14.7,2460,30.98
+2025-12-14 20:46:48,15.3,2461,30.99
+2025-12-14 20:46:51,29.3,2462,31.00
+2025-12-14 20:46:54,15,2463,31.02
+2025-12-14 20:46:58,17.7,2462,31.00
+2025-12-14 20:47:02,8.5,2459,30.97
+
+Kết quả đã được lưu vào:
+  - Text: /c/Users/nhman/OneDrive/Desktop/NLHDH/Update-Automated-Multiple-Choice-Exam-Grading/measurement_results/VM/resource_usage_internal_20251214_204603.txt
+  - CSV: /c/Users/nhman/OneDrive/Desktop/NLHDH/Update-Automated-Multiple-Choice-Exam-Grading/measurement_results/VM/resource_usage_internal_20251214_204603.csv
+Thời gian kết thúc: Sun Dec 14 20:47:05 SEAST 2025

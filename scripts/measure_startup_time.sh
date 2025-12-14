@@ -14,8 +14,8 @@ CSV_FILE="${RESULTS_DIR}/startup_time_${MODE}_${TIMESTAMP}.csv"
 
 mkdir -p ${RESULTS_DIR}
 
-# Kiểm tra dependencies
-command -v bc >/dev/null 2>&1 || { echo "Lỗi: bc chưa được cài đặt. Cài đặt: sudo apt-get install bc" >&2; exit 1; }
+# Kiểm tra dependencies - bc là optional, sẽ dùng awk nếu không có
+# command -v bc >/dev/null 2>&1 || { echo "Cảnh báo: bc chưa được cài đặt, sẽ dùng awk thay thế" >&2; }
 if [ "$MODE" = "docker" ]; then
     command -v docker >/dev/null 2>&1 || { echo "Lỗi: Docker chưa được cài đặt" >&2; exit 1; }
     command -v curl >/dev/null 2>&1 || { echo "Lỗi: curl chưa được cài đặt" >&2; exit 1; }
@@ -25,7 +25,22 @@ fi
 calc_time() {
     local start=$1
     local end=$2
-    echo "$end - $start" | bc -l
+    # Dùng awk thay vì bc (awk có sẵn trong Git Bash)
+    awk "BEGIN {printf \"%.6f\", $end - $start}"
+}
+
+# Hàm tính toán với awk (thay thế bc)
+calc_awk() {
+    local expr=$1
+    awk "BEGIN {printf \"%.6f\", $expr}"
+}
+
+# Hàm so sánh số thực (thay thế bc)
+compare_float() {
+    local a=$1
+    local op=$2
+    local b=$3
+    awk "BEGIN {if ($a $op $b) exit 0; else exit 1}"
 }
 
 # Hàm lấy timestamp với độ chính xác cao
@@ -50,7 +65,7 @@ if [ "$MODE" = "docker" ]; then
     
     # Dừng containers nếu đang chạy
     echo "Dừng containers hiện tại (nếu có)..." | tee -a ${OUTPUT_FILE}
-    docker compose down >/dev/null 2>&1 || true
+    docker compose -f deployment/docker-compose.yml down >/dev/null 2>&1 || true
     sleep 2
     
     # Đo thời gian build image (chỉ nếu không có flag --no-build)
@@ -58,10 +73,10 @@ if [ "$MODE" = "docker" ]; then
     if [ "$NO_BUILD" != "--no-build" ]; then
         echo "1. Đo thời gian build Docker image..." | tee -a ${OUTPUT_FILE}
         START_BUILD=$(get_timestamp)
-        docker compose build --no-cache 2>&1 | tee -a ${OUTPUT_FILE} | grep -E "(Step|ERROR|Successfully)" || true
+        docker compose -f deployment/docker-compose.yml build --no-cache 2>&1 | tee -a ${OUTPUT_FILE} | grep -E "(Step|ERROR|Successfully)" || true
         END_BUILD=$(get_timestamp)
         BUILD_TIME=$(calc_time $START_BUILD $END_BUILD)
-        BUILD_TIME_MS=$(echo "$BUILD_TIME * 1000" | bc -l | cut -d. -f1)
+        BUILD_TIME_MS=$(awk "BEGIN {printf \"%.0f\", $BUILD_TIME * 1000}")
         echo "Thời gian build: ${BUILD_TIME} giây (${BUILD_TIME_MS} ms)" | tee -a ${OUTPUT_FILE}
         echo "build,${BUILD_TIME},${BUILD_TIME_MS}" >> ${CSV_FILE}
         echo "" | tee -a ${OUTPUT_FILE}
@@ -74,10 +89,10 @@ if [ "$MODE" = "docker" ]; then
     # Đo thời gian start container
     echo "2. Đo thời gian start container..." | tee -a ${OUTPUT_FILE}
     START_START=$(get_timestamp)
-    docker compose up -d 2>&1 | tee -a ${OUTPUT_FILE} | tail -5
+    docker compose -f deployment/docker-compose.yml up -d 2>&1 | tee -a ${OUTPUT_FILE} | tail -5
     END_START=$(get_timestamp)
     START_TIME=$(calc_time $START_START $END_START)
-    START_TIME_MS=$(echo "$START_TIME * 1000" | bc -l | cut -d. -f1)
+    START_TIME_MS=$(awk "BEGIN {printf \"%.0f\", $START_TIME * 1000}")
     echo "Thời gian start: ${START_TIME} giây (${START_TIME_MS} ms)" | tee -a ${OUTPUT_FILE}
     echo "start,${START_TIME},${START_TIME_MS}" >> ${CSV_FILE}
     echo "" | tee -a ${OUTPUT_FILE}
@@ -94,20 +109,20 @@ if [ "$MODE" = "docker" ]; then
     READY_TIME=0
     READY_TIME_MS=0
     
-    while (( $(echo "$ELAPSED < $MAX_WAIT" | bc -l) )); do
+    while awk "BEGIN {exit !($ELAPSED < $MAX_WAIT)}"; do
         if curl -sf http://localhost/ > /dev/null 2>&1; then
             END_READY=$(get_timestamp)
             READY_TIME=$(calc_time $START_READY $END_READY)
-            READY_TIME_MS=$(echo "$READY_TIME * 1000" | bc -l | cut -d. -f1)
+            READY_TIME_MS=$(awk "BEGIN {printf \"%.0f\", $READY_TIME * 1000}")
             echo "Service ready sau: ${READY_TIME} giây (${READY_TIME_MS} ms)" | tee -a ${OUTPUT_FILE}
             echo "ready,${READY_TIME},${READY_TIME_MS}" >> ${CSV_FILE}
             break
         fi
         sleep 0.1
-        ELAPSED=$(echo "$ELAPSED + 0.1" | bc -l)
+        ELAPSED=$(awk "BEGIN {printf \"%.1f\", $ELAPSED + 0.1}")
     done
     
-    if (( $(echo "$ELAPSED >= $MAX_WAIT" | bc -l) )); then
+    if awk "BEGIN {exit !($ELAPSED >= $MAX_WAIT)}"; then
         echo "⚠️  Service không ready sau ${MAX_WAIT} giây" | tee -a ${OUTPUT_FILE}
         echo "ready,-1,-1" >> ${CSV_FILE}
         READY_TIME=-1
@@ -117,10 +132,10 @@ if [ "$MODE" = "docker" ]; then
     echo "" | tee -a ${OUTPUT_FILE}
     echo "4. Đo thời gian stop container..." | tee -a ${OUTPUT_FILE}
     START_STOP=$(get_timestamp)
-    docker compose down 2>&1 | tee -a ${OUTPUT_FILE} | tail -3
+    docker compose -f deployment/docker-compose.yml down 2>&1 | tee -a ${OUTPUT_FILE} | tail -3
     END_STOP=$(get_timestamp)
     STOP_TIME=$(calc_time $START_STOP $END_STOP)
-    STOP_TIME_MS=$(echo "$STOP_TIME * 1000" | bc -l | cut -d. -f1)
+    STOP_TIME_MS=$(awk "BEGIN {printf \"%.0f\", $STOP_TIME * 1000}")
     echo "Thời gian stop: ${STOP_TIME} giây (${STOP_TIME_MS} ms)" | tee -a ${OUTPUT_FILE}
     echo "stop,${STOP_TIME},${STOP_TIME_MS}" >> ${CSV_FILE}
     
@@ -139,8 +154,8 @@ if [ "$MODE" = "docker" ]; then
     echo "Stop time:      ${STOP_TIME} giây (${STOP_TIME_MS} ms)" | tee -a ${OUTPUT_FILE}
     
     if [ "$READY_TIME" != "-1" ]; then
-        TOTAL_TIME=$(echo "$BUILD_TIME + $START_TIME + $READY_TIME" | bc -l)
-        TOTAL_TIME_MS=$(echo "$TOTAL_TIME * 1000" | bc -l | cut -d. -f1)
+        TOTAL_TIME=$(awk "BEGIN {printf \"%.6f\", $BUILD_TIME + $START_TIME + $READY_TIME}")
+        TOTAL_TIME_MS=$(awk "BEGIN {printf \"%.0f\", $TOTAL_TIME * 1000}")
         echo "Tổng (build + start + ready): ${TOTAL_TIME} giây (${TOTAL_TIME_MS} ms)" | tee -a ${OUTPUT_FILE}
         echo "total,${TOTAL_TIME},${TOTAL_TIME_MS}" >> ${CSV_FILE}
     fi
@@ -151,8 +166,8 @@ elif [ "$MODE" = "vm" ]; then
     echo "" | tee -a ${OUTPUT_FILE}
     
     # Cấu hình VM (có thể thay đổi)
-    VM_NAME=${VM_NAME:-"exam-grading-vm"}
-    VM_SSH=${VM_SSH:-"user@localhost"}
+    VM_NAME=${VM_NAME:-"ubuntu"}
+    VM_SSH=${VM_SSH:-"vm-ubuntu"}
     VM_SSH_PORT=${VM_SSH_PORT:-"2222"}
     
     # Đo thời gian boot VM (cần VBoxManage)
@@ -167,7 +182,7 @@ elif [ "$MODE" = "vm" ]; then
         VBoxManage startvm ${VM_NAME} --type headless 2>&1 | tee -a ${OUTPUT_FILE}
         END_BOOT=$(get_timestamp)
         BOOT_TIME=$(calc_time $START_BOOT $END_BOOT)
-        BOOT_TIME_MS=$(echo "$BOOT_TIME * 1000" | bc -l | cut -d. -f1)
+        BOOT_TIME_MS=$(awk "BEGIN {printf \"%.0f\", $BOOT_TIME * 1000}")
         echo "Thời gian boot VM: ${BOOT_TIME} giây (${BOOT_TIME_MS} ms)" | tee -a ${OUTPUT_FILE}
         echo "boot,${BOOT_TIME},${BOOT_TIME_MS}" >> ${CSV_FILE}
         echo "" | tee -a ${OUTPUT_FILE}
@@ -180,13 +195,14 @@ elif [ "$MODE" = "vm" ]; then
         echo "Đợi SSH sẵn sàng..." | tee -a ${OUTPUT_FILE}
         MAX_SSH_WAIT=120
         SSH_ELAPSED=0
-        while (( $(echo "$SSH_ELAPSED < $MAX_SSH_WAIT" | bc -l) )); do
-            if ssh -p ${VM_SSH_PORT} -o ConnectTimeout=2 -o StrictHostKeyChecking=no ${VM_SSH} "echo ready" >/dev/null 2>&1; then
+        while awk "BEGIN {exit !($SSH_ELAPSED < $MAX_SSH_WAIT)}"; do
+            if ssh -p ${VM_SSH_PORT} -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o PasswordAuthentication=no ${VM_SSH} "echo ready" >/dev/null 2>&1 || \
+               ssh -p ${VM_SSH_PORT} -o ConnectTimeout=2 -o StrictHostKeyChecking=no ${VM_SSH} "echo ready" >/dev/null 2>&1; then
                 echo "SSH sẵn sàng sau ${SSH_ELAPSED} giây" | tee -a ${OUTPUT_FILE}
                 break
             fi
             sleep 2
-            SSH_ELAPSED=$(echo "$SSH_ELAPSED + 2" | bc -l)
+            SSH_ELAPSED=$(awk "BEGIN {printf \"%.1f\", $SSH_ELAPSED + 2}")
         done
     else
         echo "⚠️  VBoxManage không tìm thấy. Bỏ qua đo thời gian boot VM." | tee -a ${OUTPUT_FILE}
@@ -198,37 +214,53 @@ elif [ "$MODE" = "vm" ]; then
     echo "2. Đo thời gian start service trong VM..." | tee -a ${OUTPUT_FILE}
     START_SERVICE=$(get_timestamp)
     
-    # Kiểm tra SSH connection
-    if ssh -p ${VM_SSH_PORT} -o ConnectTimeout=5 ${VM_SSH} "echo test" >/dev/null 2>&1; then
-        ssh -p ${VM_SSH_PORT} ${VM_SSH} "sudo systemctl start exam-grading" 2>&1 | tee -a ${OUTPUT_FILE} || true
+    # Xác định URL để test service ready
+    if [ -n "$VM_URL" ]; then
+        VM_TEST_URL="$VM_URL"
+    elif [ -n "$VM_IP" ]; then
+        VM_TEST_URL="http://${VM_IP}/"
+    else
+        VM_TEST_URL="http://127.0.0.1:8080/"  # Mặc định dùng port forwarding
+    fi
+    
+    # Kiểm tra SSH connection - dùng SSH config nếu là vm-ubuntu
+    if [ "$VM_SSH" = "vm-ubuntu" ]; then
+        SSH_CMD="ssh vm-ubuntu"
+    else
+        SSH_CMD="ssh -p ${VM_SSH_PORT} -o StrictHostKeyChecking=no ${VM_SSH}"
+    fi
+    
+    if $SSH_CMD "echo test" >/dev/null 2>&1; then
+        $SSH_CMD "sudo systemctl start exam-automated" 2>&1 | tee -a ${OUTPUT_FILE} || true
         END_SERVICE=$(get_timestamp)
         SERVICE_TIME=$(calc_time $START_SERVICE $END_SERVICE)
-        SERVICE_TIME_MS=$(echo "$SERVICE_TIME * 1000" | bc -l | cut -d. -f1)
+        SERVICE_TIME_MS=$(awk "BEGIN {printf \"%.0f\", $SERVICE_TIME * 1000}")
         echo "Thời gian start service: ${SERVICE_TIME} giây (${SERVICE_TIME_MS} ms)" | tee -a ${OUTPUT_FILE}
         echo "service_start,${SERVICE_TIME},${SERVICE_TIME_MS}" >> ${CSV_FILE}
         
         # Đo thời gian service ready
         echo "" | tee -a ${OUTPUT_FILE}
         echo "3. Đo thời gian service ready..." | tee -a ${OUTPUT_FILE}
+        echo "Testing URL: ${VM_TEST_URL}" | tee -a ${OUTPUT_FILE}
         START_READY=$(get_timestamp)
         MAX_WAIT=60
         ELAPSED=0
         
-        while (( $(echo "$ELAPSED < $MAX_WAIT" | bc -l) )); do
-            if curl -sf http://localhost:8080/ >/dev/null 2>&1 || \
-               ssh -p ${VM_SSH_PORT} ${VM_SSH} "curl -sf http://localhost/ >/dev/null 2>&1"; then
+        while awk "BEGIN {exit !($ELAPSED < $MAX_WAIT)}"; do
+            if curl -sf ${VM_TEST_URL} >/dev/null 2>&1 || \
+               $SSH_CMD "curl -sf http://localhost/ >/dev/null 2>&1"; then
                 END_READY=$(get_timestamp)
                 READY_TIME=$(calc_time $START_READY $END_READY)
-                READY_TIME_MS=$(echo "$READY_TIME * 1000" | bc -l | cut -d. -f1)
+                READY_TIME_MS=$(awk "BEGIN {printf \"%.0f\", $READY_TIME * 1000}")
                 echo "Service ready sau: ${READY_TIME} giây (${READY_TIME_MS} ms)" | tee -a ${OUTPUT_FILE}
                 echo "ready,${READY_TIME},${READY_TIME_MS}" >> ${CSV_FILE}
                 break
             fi
             sleep 0.5
-            ELAPSED=$(echo "$ELAPSED + 0.5" | bc -l)
+            ELAPSED=$(awk "BEGIN {printf \"%.1f\", $ELAPSED + 0.5}")
         done
         
-        if (( $(echo "$ELAPSED >= $MAX_WAIT" | bc -l) )); then
+        if awk "BEGIN {exit !($ELAPSED >= $MAX_WAIT)}"; then
             echo "⚠️  Service không ready sau ${MAX_WAIT} giây" | tee -a ${OUTPUT_FILE}
             echo "ready,-1,-1" >> ${CSV_FILE}
         fi

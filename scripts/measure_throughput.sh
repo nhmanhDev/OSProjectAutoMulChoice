@@ -25,14 +25,21 @@ URL="http://localhost/"
 
 if [ "$MODE" = "docker" ]; then
     # Đảm bảo container đang chạy
-    if ! docker ps | grep -q exam-grading; then
+    if ! docker ps | grep -q exam-automated; then
         echo "Khởi động container..." | tee -a ${OUTPUT_FILE}
-        docker-compose up -d
+        docker compose -f deployment/docker-compose.yml up -d
         sleep 10
     fi
     URL="http://localhost/"
 elif [ "$MODE" = "vm" ]; then
-    URL="http://vm_ip/"
+    # Sử dụng biến môi trường VM_URL hoặc VM_IP, mặc định là localhost:8080 (port forwarding)
+    if [ -n "$VM_URL" ]; then
+        URL="$VM_URL"
+    elif [ -n "$VM_IP" ]; then
+        URL="http://${VM_IP}/"
+    else
+        URL="http://127.0.0.1:8080/"  # Mặc định dùng port forwarding
+    fi
 fi
 
 echo "Testing URL: ${URL}" | tee -a ${OUTPUT_FILE}

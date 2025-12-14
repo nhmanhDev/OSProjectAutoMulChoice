@@ -1,0 +1,27 @@
+=== Đo thời gian khởi động dịch vụ - Mode: vm ===
+Thời gian bắt đầu: Sun Dec 14 18:37:41 SEAST 2025
+Timestamp: 20251214_183741
+
+--- Đo thời gian khởi động VM ---
+Lưu ý: Cần chạy script này từ bên trong VM hoặc từ host với SSH
+
+⚠️  VBoxManage không tìm thấy. Bỏ qua đo thời gian boot VM.
+
+2. Đo thời gian start service trong VM...
+Warning: Permanently added '[127.0.0.1]:2222' (ED25519) to the list of known hosts.
+sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+sudo: a password is required
+Thời gian start service: 0.898894 giây (899 ms)
+
+3. Đo thời gian service ready...
+Testing URL: http://127.0.0.1:8080/
+Service ready sau: 0.151376 giây (151 ms)
+
+=== TỔNG KẾT ===
+Service start:   0.898894 giây (899 ms)
+Ready time:     0.151376 giây (151 ms)
+
+=== KẾT QUẢ ===
+File text: measurement_results/startup_time_vm_20251214_183741.txt
+File CSV:  measurement_results/startup_time_vm_20251214_183741.csv
+Thời gian kết thúc: Sun Dec 14 18:37:44 SEAST 2025

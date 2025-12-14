@@ -1,0 +1,4 @@
+metric,time_seconds,time_milliseconds
+boot,0,0
+service_start,0.898894,899
+ready,0.151376,151

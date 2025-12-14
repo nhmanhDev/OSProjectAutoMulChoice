@@ -1,0 +1,38 @@
+=== Đo dung lượng đĩa sử dụng - Mode: vm ===
+Thời gian: Sun Dec 14 18:37:44 SEAST 2025
+
+--- Dung lượng VM ---
+
+1. Kích thước file .vdi của VM:
+  Tìm thấy VM đang chạy: ubuntu
+  File: E:\\VB\\mayao\\ubuntu\\ubuntu.vdi
+  Kích thước: 22G (22860005376 bytes)
+
+2. Dung lượng đĩa trong VM (qua SSH):
+  Disk usage tổng thể:
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           795M  1.7M  793M   1% /run
+/dev/sda3        24G   19G  4.1G  83% /
+tmpfs           3.9G   23M  3.9G   1% /dev/shm
+tmpfs           5.0M  4.0K  5.0M   1% /run/lock
+/dev/sda2       512M  6.1M  506M   2% /boot/efi
+tmpfs           795M  120K  795M   1% /run/user/1000
+/dev/sr0         51M   51M     0 100% /media/sysadmin/VBox_GAs_7.2.4
+
+  Tìm thư mục ứng dụng:
+  Thư mục ứng dụng: /home/sysadmin/Desktop/OSProjectAutoMulChoice
+  Dung lượng:
+377M	/home/sysadmin/Desktop/OSProjectAutoMulChoice
+
+  Dung lượng các thư mục con:
+24K	deployment/
+40K	scripts/
+132K	docs/
+328K	app/
+496K	static/
+5.5M	tools/
+14M	data/
+173M	frontend/
+
+
+Kết quả đã được lưu vào: measurement_results/disk_usage_vm_20251214_183744.txt

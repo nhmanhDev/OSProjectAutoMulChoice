@@ -1,0 +1,32 @@
+=== Đo Isolation Overhead từ HOST WINDOWS - Mode: vm ===
+Thời gian: Sun Dec 14 18:39:58 SEAST 2025
+
+--- VM Isolation Overhead (từ HOST WINDOWS) ---
+
+1. Hypervisor Overhead (VirtualBox process từ HOST):
+  VirtualBox Process Memory (từ host): 10.41 MB
+
+2. VM Resource Allocation (từ VBoxManage):
+  Allocated Memory: 8192 MB
+  Allocated CPUs: 4
+
+3. Tổng VM Overhead (từ HOST):
+  Hypervisor: 10.41 MB
+  VM Allocated: 8192 MB
+  Tổng: 8202.41 MB
+
+4. VM Disk Information:
+  VDI File: E:\\VB\\mayao\\ubuntu\\ubuntu.vdi
+  VDI Size: 21.29 GB
+
+--- Phân Tích Isolation Overhead (từ HOST) ---
+
+VM Isolation Overhead (từ HOST Windows):
+  - Hypervisor (VirtualBox): ~10.41 MB
+  - VM Allocated: ~8192 MB
+  - Total: ~8202.41 MB RAM + 5-15% CPU
+  - Overhead cao: Hypervisor + Guest OS
+
+Kết quả đã được lưu vào:
+  - Text: measurement_results/isolation_overhead_vm_20251214_183958.txt
+  - CSV: measurement_results/isolation_overhead_vm_20251214_183958.csv
